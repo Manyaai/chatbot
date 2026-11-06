@@ -38,7 +38,13 @@ import { generateHashedPassword } from "./utils";
 // https://authjs.dev/reference/adapter/drizzle
 
 // biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
+const databaseUrl = process.env.POSTGRES_URL ?? process.env.chatbot_POSTGRES_URL;
+
+if (!databaseUrl) {
+  throw new Error("Missing POSTGRES_URL database connection string");
+}
+
+const client = postgres(databaseUrl);
 const db = drizzle(client);
 
 export async function getUser(email: string): Promise<User[]> {
